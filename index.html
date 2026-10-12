@@ -1,0 +1,555 @@
+<!DOCTYPE html><html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Petualangan Katak 🐸</title><style>
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    color: #174936;
+    background: linear-gradient(#b9ecff, #e8f9ff 45%, #b5e8b0);
+    min-height: 100vh;
+}
+
+.container {
+    max-width: 950px;
+    margin: auto;
+    padding: 16px;
+}
+
+header {
+    text-align: center;
+    padding: 12px;
+}
+
+header h1 {
+    color: #126344;
+    font-size: clamp(25px, 5vw, 40px);
+}
+
+.panel {
+    background: #ffffffeb;
+    border-radius: 20px;
+    padding: 16px;
+    margin: 14px 0;
+    box-shadow: 0 6px 18px #174c4c18;
+}
+
+.info {
+    display: flex;
+    justify-content: space-around;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.badge {
+    background: #e0f6dc;
+    border-radius: 20px;
+    padding: 10px 14px;
+    font-weight: bold;
+}
+
+#river {
+    position: relative;
+    overflow: hidden;
+    min-height: 280px;
+    background: linear-gradient(90deg, #4fc6db, #9ae9e8, #4fc6db);
+    border: 5px solid white;
+    border-radius: 22px;
+    margin: 16px 0;
+}
+
+.bank {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 8%;
+    background: linear-gradient(90deg, #329c50, #83d76b);
+}
+
+.left {
+    left: 0;
+}
+
+.right {
+    right: 0;
+}
+
+#pads {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    min-height: 270px;
+    padding: 10px 5%;
+    gap: 4px;
+}
+
+.pad {
+    width: clamp(38px, 8vw, 70px);
+    height: clamp(38px, 8vw, 70px);
+    flex-shrink: 0;
+    border-radius: 50%;
+    border: 3px solid #e8ffd8;
+    background: radial-gradient(circle at 35% 25%, #b5f58c, #51b95e 70%);
+    box-shadow: 0 5px 0 #24885a;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    font-size: 25px;
+}
+
+.pad.done {
+    background: #ffd166;
+    box-shadow: 0 5px 0 #bd762c;
+}
+
+.pad.current {
+    outline: 4px solid white;
+    transform: translateY(-8px);
+}
+
+.frog {
+    position: absolute;
+    top: -28px;
+    font-size: 30px;
+}
+
+#status {
+    text-align: center;
+    font-weight: bold;
+    margin: 12px 0;
+}
+
+.progress {
+    height: 12px;
+    background: #dcebe5;
+    border-radius: 20px;
+    overflow: hidden;
+    margin: 12px 0;
+}
+
+#bar {
+    height: 100%;
+    width: 0;
+    background: linear-gradient(90deg, #21a16c, #a1db53);
+    transition: width 0.3s;
+}
+
+#difficulty {
+    text-align: center;
+    font-weight: bold;
+    color: #217b54;
+}
+
+#question {
+    text-align: center;
+    font-size: clamp(30px, 6vw, 45px);
+    font-weight: bold;
+    margin: 18px 0;
+}
+
+.answers {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+    max-width: 500px;
+    margin: auto;
+}
+
+button {
+    cursor: pointer;
+    border: none;
+    border-radius: 12px;
+    padding: 13px;
+    font-size: 17px;
+    font-weight: bold;
+    transition: 0.2s;
+}
+
+button:hover {
+    transform: translateY(-2px);
+}
+
+.answer {
+    background: #e8f7e9;
+    border: 2px solid #b9e4c0;
+    color: #154c38;
+}
+
+.answer:disabled {
+    cursor: default;
+}
+
+.primary {
+    background: #177b52;
+    color: white;
+}
+
+.secondary {
+    background: #e8f4ff;
+    color: #164e70;
+}
+
+#feedback {
+    text-align: center;
+    font-weight: bold;
+    min-height: 28px;
+    margin-top: 15px;
+}
+
+#next {
+    display: none;
+    margin: 12px auto;
+}
+
+.center {
+    text-align: center;
+}
+
+@media(max-width: 480px) {
+    .container {
+        padding: 8px;
+    }
+
+    .panel {
+        padding: 12px;
+    }
+
+    #river {
+        min-height: 230px;
+    }
+
+    #pads {
+        min-height: 220px;
+        padding: 10px 3%;
+    }
+
+    .pad {
+        width: 36px;
+        height: 36px;
+        font-size: 17px;
+    }
+
+    .frog {
+        font-size: 23px;
+        top: -24px;
+    }
+}
+</style></head><body><div class="container"><header>
+    <div style="font-size:45px">🐸 🌿 💦</div>
+    <h1>Petualangan Katak</h1>
+    <p>Bantu Kiko menyeberangi sungai dengan menjawab soal matematika!</p>
+</header><section class="panel info">
+    <span class="badge" id="levelLabel">Level 1 / 10</span>
+    <span class="badge" id="stepLabel">Lompatan 1 dari 5</span>
+    <span class="badge" id="scoreLabel">⭐ Skor: 0</span>
+</section><div id="river">
+    <div class="bank left"></div>
+    <div class="bank right"></div>
+    <div id="pads"></div>
+</div><div id="status">Jawab soal dengan benar agar Kiko melompat!</div><div class="progress">
+    <div id="bar"></div>
+</div><section class="panel" id="quizPanel">
+    <div id="difficulty">PEMULA</div><div id="question">2 + 3 = ?</div>
+
+<div class="answers" id="answers"></div>
+
+<div id="feedback" aria-live="polite"></div>
+
+<button class="primary" id="next">Lompatan berikutnya ➜</button>
+
+</section><section class="panel center">
+    <h3>🎯 Misi Petualangan</h3>
+    <p>Selesaikan 5 soal di setiap level.</p>
+    <p>Semakin tinggi levelnya, semakin menantang soalnya!</p>
+    <p>🏆 Level tertinggi: <strong id="best">1</strong></p>
+    <button class="secondary" id="restart">↻ Ulangi Permainan</button>
+</section><footer class="center">
+    <p>Belajar Matematika Bersama Kiko 🐸🌱</p>
+</footer></div><script>
+const $ = id => document.getElementById(id);
+
+let level = 1;
+let step = 0;
+let score = 0;
+let best = 1;
+let answered = false;
+let correctAnswer = 0;
+
+const levelNames = [
+    "Pemula",
+    "Penjelajah",
+    "Lincah",
+    "Cerdas",
+    "Hebat",
+    "Jago Hitung",
+    "Ahli Sungai",
+    "Master Matematika",
+    "Pahlawan Teratai",
+    "Legenda Katak"
+];
+
+const maxNumbers = [
+    10, 15, 25, 40, 60,
+    100, 150, 250, 500, 999
+];
+
+function rand(n) {
+    return Math.floor(Math.random() * n);
+}
+
+function int(min, max) {
+    return min + rand(max - min + 1);
+}
+
+function makeQuestion(l) {
+    let a, b, op, ans;
+    const max = maxNumbers[l - 1];
+
+    let ops;
+
+    if (l <= 2) {
+        ops = ["+", "−"];
+    } else if (l <= 4) {
+        ops = ["+", "−", "×"];
+    } else {
+        ops = ["+", "−", "×", "÷"];
+    }
+
+    op = ops[rand(ops.length)];
+
+    if (op === "+") {
+        a = int(1, max);
+        b = int(1, max);
+        ans = a + b;
+    }
+
+    else if (op === "−") {
+        a = int(1, max);
+        b = int(1, a);
+        ans = a - b;
+    }
+
+    else if (op === "×") {
+        a = int(2, Math.min(12, 3 + l));
+        b = int(2, Math.min(12, 3 + l));
+        ans = a * b;
+    }
+
+    else {
+        b = int(2, Math.min(12, 3 + l));
+        ans = int(2, Math.min(12, 3 + l));
+        a = b * ans;
+    }
+
+    return {
+        text: `${a} ${op} ${b} = ?`,
+        answer: ans
+    };
+}
+
+function renderPads() {
+    const pads = $("pads");
+    pads.innerHTML = "";
+
+    for (let i = 0; i < 5; i++) {
+        const p = document.createElement("div");
+
+        p.className = "pad";
+
+        if (i < step) {
+            p.classList.add("done");
+            p.textContent = "✓";
+        } else {
+            p.textContent = "🌿";
+        }
+
+        if (i === step && step < 5) {
+            p.classList.add("current");
+
+            const frog = document.createElement("span");
+            frog.className = "frog";
+            frog.textContent = "🐸";
+
+            p.appendChild(frog);
+        }
+
+        pads.appendChild(p);
+    }
+}
+
+function newQuestion() {
+    answered = false;
+
+    $("feedback").textContent = "";
+    $("next").style.display = "none";
+
+    $("levelLabel").textContent =
+        `Level ${level} / 10`;
+
+    $("stepLabel").textContent =
+        `Lompatan ${step + 1} dari 5`;
+
+    $("scoreLabel").textContent =
+        `⭐ Skor: ${score}`;
+
+    $("difficulty").textContent =
+        levelNames[level - 1].toUpperCase();
+
+    $("bar").style.width =
+        `${((level - 1) * 5 + step) / 50 * 100}%`;
+
+    const q = makeQuestion(level);
+
+    correctAnswer = q.answer;
+
+    $("question").textContent = q.text;
+
+    const vals = new Set([correctAnswer]);
+
+    while (vals.size < 4) {
+        const range = Math.max(
+            5,
+            Math.ceil(Math.abs(correctAnswer) * 0.35)
+        );
+
+        const v = correctAnswer + int(-range, range);
+
+        if (v >= 0 && v !== correctAnswer) {
+            vals.add(v);
+        }
+    }
+
+    const options = [...vals];
+
+    for (let i = options.length - 1; i > 0; i--) {
+        const j = rand(i + 1);
+        [options[i], options[j]] =
+            [options[j], options[i]];
+    }
+
+    const area = $("answers");
+    area.innerHTML = "";
+
+    options.forEach(v => {
+        const btn = document.createElement("button");
+
+        btn.className = "answer";
+        btn.textContent = v;
+
+        btn.onclick = () => choose(v, btn);
+
+        area.appendChild(btn);
+    });
+
+    $("status").textContent =
+        "Hitung jawabannya, lalu bantu Kiko melompat!";
+
+    renderPads();
+}
+
+function choose(value, button) {
+    if (answered) return;
+
+    if (value === correctAnswer) {
+        answered = true;
+        score += 10;
+
+        $("feedback").textContent =
+            "Hebat! Jawaban benar. Kiko melompat! 🐸✨";
+
+        $("feedback").style.color = "#167547";
+
+        [...$("answers").children].forEach(btn => {
+            btn.disabled = true;
+        });
+
+        step++;
+
+        renderPads();
+
+        $("scoreLabel").textContent =
+            `⭐ Skor: ${score}`;
+
+        $("stepLabel").textContent =
+            `Lompatan ${Math.min(step + 1, 5)} dari 5`;
+
+        $("bar").style.width =
+            `${((level - 1) * 5 + step) / 50 * 100}%`;
+
+        $("status").textContent =
+            step === 5
+                ? "Kiko sampai di tepi sungai! 🎉"
+                : "Satu teratai berhasil dilewati!";
+
+        $("next").textContent =
+            step === 5
+                ? (level === 10
+                    ? "🏆 Lihat Hasil Akhir"
+                    : `Lanjut ke Level ${level + 1} ➜`)
+                : "Lompatan berikutnya ➜";
+
+        $("next").style.display = "block";
+    }
+
+    else {
+        $("feedback").textContent =
+            "Belum tepat. Coba hitung sekali lagi! 💪";
+
+        $("feedback").style.color = "#b45309";
+
+        button.style.borderColor = "#e9a34a";
+    }
+}
+
+$("next").onclick = function() {
+    if (step === 5) {
+        if (level === 10) {
+            finish();
+            return;
+        }
+
+        level++;
+        best = Math.max(best, level);
+
+        $("best").textContent = best;
+
+        step = 0;
+    }
+
+    newQuestion();
+};
+
+function finish() {
+    $("quizPanel").innerHTML = `
+        <div class="center" style="padding:20px">
+            <div style="font-size:65px">🐸🏆🌈</div>
+            <h2>Petualangan Selesai!</h2>
+            <p>Kiko berhasil menyeberangi sungai di semua 10 level!</p>
+            <h2>Skor Akhir: ${score} ⭐</h2>
+            <p>Terus berlatih agar semakin jago matematika!</p>
+            <button class="primary" onclick="location.reload()">
+                Main Lagi ↻
+            </button>
+        </div>
+    `;
+
+    $("bar").style.width = "100%";
+    $("status").textContent =
+        "Misi berhasil diselesaikan!";
+}
+
+$("restart").onclick = function() {
+    location.reload();
+};
+
+newQuestion();
+</script></body>
+                                              </html>
